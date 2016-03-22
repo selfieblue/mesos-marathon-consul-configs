@@ -1,0 +1,121 @@
+vi /consul/registrator.json
+
+Add this content
+
+{
+  "id": "registrator",
+  "cpus": 0.1,
+  "mem": 256.0,
+  "instances": 2,
+  "cmd": "/bin/registrator consul://localhost:8500; ping localhost",
+  "constraints": [["hostname", "UNIQUE"]],
+  "env":{"SERVICE_NAME":"registrator","SERVICE_TAGS":"registrator"},
+  "forcePullImage": true,
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "gliderlabs/registrator:latest",
+      "network": "HOST"
+    },
+  "volumes": [
+      {
+        "containerPath": "/tmp/docker.sock",
+        "hostPath": "/var/run/docker.sock",
+        "mode": "RO"
+      }
+  ]
+  }
+}
+
+
+curl -X POST http://mesos1:8080/v2/apps -d @/consul/registrator.json -H "Content-type: application/json"
+
+
+vi /consul/hello.json
+
+Add this content
+
+{
+  "id": "hello",
+  "cpus": 1,
+  "mem": 1024.0,
+  "instances": 1,
+  "constraints": [],
+  "env":{"SERVICE_NAME":"hello","SERVICE_TAGS":"hello"},
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "centos7:hellov1",
+    "privileged": true,
+      "network": "BRIDGE",
+      "portMappings": [
+        { "containerPort": 8080, "hostPort": 0, "servicePort": 0, "protocol": "tcp" }
+      ]
+    },
+  "volumes": [
+      {
+        "containerPath": "/sys/fs/cgroup",
+        "hostPath": "/sys/fs/cgroup",
+        "mode": "RO"
+      }
+  ]
+  },
+  "healthChecks": [
+    {
+      "path": "/index.jsp",
+      "portIndex": 0,
+      "protocol": "HTTP",
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60,
+      "timeoutSeconds": 20,
+      "maxConsecutiveFailures": 2,
+      "ignoreHttp1xx": false
+   }
+ ]
+}
+
+
+curl -X POST http://mesos1:8080/v2/apps -d @/consul/hello.json -H "Content-type: application/json"
+
+=================================
+vi /consul/hello2.json
+{
+  "id": "hello",
+  "cpus": 1,
+  "mem": 1024.0,
+  "instances": 1,
+  "constraints": [],
+  "env":{"SERVICE_NAME":"hello","SERVICE_TAGS":"hello"},
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "centos7:hellov2",
+    "privileged": true,
+      "network": "BRIDGE",
+      "portMappings": [
+        { "containerPort": 8080, "hostPort": 0, "servicePort": 0, "protocol": "tcp" }
+      ]
+    },
+  "volumes": [
+      {
+        "containerPath": "/sys/fs/cgroup",
+        "hostPath": "/sys/fs/cgroup",
+        "mode": "RO"
+      }
+  ]
+  },
+  "healthChecks": [
+    {
+      "path": "/index.jsp",
+      "portIndex": 0,
+      "protocol": "HTTP",
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60,
+      "timeoutSeconds": 20,
+      "maxConsecutiveFailures": 2,
+      "ignoreHttp1xx": false
+   }
+ ]
+}
+
+curl -X PUT http://mesos1:8080/v2/apps/hello -d @/consul/hello2.json -H "Content-type: application/json"
