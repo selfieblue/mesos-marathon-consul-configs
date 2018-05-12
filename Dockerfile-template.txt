@@ -1,5 +1,5 @@
 FROM centos:7.2.1511
-MAINTAINER jesada gonkratoke "jesada.gon@ascendcorp.com"
+
 
 ENV container docker
 RUN yum -y update; yum clean all
@@ -19,7 +19,7 @@ CMD ["/usr/sbin/init"]
 
 -------------------------------------------------------
 FROM centos7:systemd
-MAINTAINER jesada gonkratoke "jesada.gon@ascendcorp.com"
+
 
 RUN mkdir /temp
 COPY jdk-8u73-linux-x64.rpm /temp
@@ -48,7 +48,7 @@ CMD ["/usr/sbin/init"]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FROM centos7:systemd
-MAINTAINER jesada gonkratoke "jesada.gon@ascendcorp.com"
+
 
 RUN mkdir /temp
 COPY jdk-8u73-linux-x64.rpm /temp
